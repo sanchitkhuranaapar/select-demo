@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { map, Observable, of, tap } from 'rxjs';
 import { AppService } from './app.service';
 import { Validatevalue } from './customvalidators/customvalidator.validator';
 
 export interface Animal {
   name: string;
   sound: string;
-  key: boolean
+  key: boolean;
+  selected?: boolean;
 }
 
 @Component({
@@ -15,15 +16,24 @@ export interface Animal {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
  
-  animalControl = new FormControl('', [Validators.required, Validatevalue]);
+  animalControl = new FormControl({} as Animal, [Validators.required, Validatevalue]);
   animals: Observable<Animal[]>;
- 
+  selectedAnimal: any
   constructor(
     private readonly _appService: AppService
   ) {
-    this.animals = this._appService.getAnimals();
+    this.animals = this._appService.getAnimals().pipe(tap(animals => {
+      const selected = animals.find(a => a.selected);
+      this.animalControl.patchValue(selected as Animal);
+      this.animalControl.markAsTouched();
+    }));
   }
+ngOnInit(): void {
+  this.animals.pipe(map(res => {
+    this.selectedAnimal  = res[0].key
+  })).subscribe()
+}
 
 }
