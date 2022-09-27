@@ -4,7 +4,7 @@
       <mat-label>Favorite animal</mat-label>
       <mat-select
         [formControl]="animalControl"
-        [(value)]="selectedAnimal"
+        [ngClass]="animalControl.errors?.['isSelected'] ? 'one' : 'two'"
         required
       >
         <mat-option

@@ -14,26 +14,22 @@ export interface Animal {
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
- 
-  animalControl = new FormControl({} as Animal, [Validators.required, Validatevalue]);
+export class AppComponent {
+  animalControl = new FormControl({} as Animal, [
+    Validators.required,
+    Validatevalue,
+  ]);
   animals: Observable<Animal[]>;
-  selectedAnimal: any
-  constructor(
-    private readonly _appService: AppService
-  ) {
-    this.animals = this._appService.getAnimals().pipe(tap(animals => {
-      const selected = animals.find(a => a.selected);
-      this.animalControl.patchValue(selected as Animal);
-      this.animalControl.markAsTouched();
-    }));
+  selectedAnimal: boolean = false;
+  constructor(private readonly _appService: AppService) {
+    this.animals = this._appService.getAnimals().pipe(
+      tap((animals) => {
+        const selected = animals.find((a) => a.selected);
+        this.animalControl.patchValue(selected as Animal);
+        this.animalControl.markAsTouched();
+      })
+    );
   }
-ngOnInit(): void {
-  this.animals.pipe(map(res => {
-    this.selectedAnimal  = res[0].key
-  })).subscribe()
-}
-
 }
